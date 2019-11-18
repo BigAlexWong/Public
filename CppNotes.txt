@@ -1,0 +1,167 @@
+15.7 Overload operators as global functions
+15.7.1 since we need access to oprands¡¯ private attrubutes, we usually declare these functions as friend of the oprands¡¯ class.
+15.7.2 Unary operators as global functions.
+--Usually declared as friend of the oprand class
+class MyString
+{
+private:
+	char *str;
+	friend MyString operator-(const MyString &obj);
+public:
+--Unary operator as global function takes one parameter
+// overload unary minus as a global function
+MyString operator-(const MyString &obj) // unary operator expects one input
+{
+	char *buff{ new char[std::strlen(obj.str) + 1] }; // new C string on the heap
+	std::strcpy(buff, obj.str);  //copy str to buff
+	for (size_t i = 0; i < std::strlen(buff); i++)  // convert buff to lowercase 
+		buff[i] = std::tolower(buff[i]);
+	MyString temp{ buff };  // create a Mystring object from this C string
+	delete[] buff;  //release buff
+	return temp;
+}
+15.7.3 Binary operators as global functions
+-- add this global function to friends of oprand class
+private:
+	char *str;
+	friend MyString operator-(const MyString &obj);
+	friend bool operator==(const MyString &lhs, const MyString &rhs);
+-- implement it
+// overload binary equility as a global function
+bool operator==(const MyString &lhs, const MyString &rhs) //binary operator expects two inputs
+{
+	return (std::strcmp(lhs.str, rhs.str) == 0); // return a boolean
+}
+15.8 Overload stream insertion and extraction operator
+15.8.1 why stream operators are implemented as global functions:
+If they are implemented as member methods, we will have to use them like these:
+Obj << cout;               or                Obj >> cin;
+Object has to be on the left which does not make sense.
+15.8.2 friend declaration in .h
+//stream insertion operator cout<<: 
+	//takes two inputs: output stream and the object
+	//output an output stream to enable chain output.
+	friend std::ostream &operator<<(std::ostream &out, const MyString &rhs);
+	//stream extraction operator cin>>:
+	//takes two inputs: input stream and the object
+	//output an input stream by reference to enable chain output
+	friend std::istream &operator>>(std::istream &in, MyString &rhs);
+
+15.8.3 implementation 
+std::ostream &operator<<(std::ostream &out, const MyString &obj)
+{
+	out << obj.str;
+	return out;  // enable chain insertion
+}
+
+std::istream &operator>>(std::istream &in, MyString &obj) //no const to modify it
+{
+	char *buff = new char[1000];
+	in >> buff;
+	obj = MyString{ buff };
+	delete[] buff;
+	return in;  // enable chain extraction
+} 
+16 Inheritance
+16.1 Intro and terms
+16.1.1 What is inheritance
+deriving new classes from existing classes.
+The new classes contain the data and behaviors of the existing class and can be added with new functionalities. 
+It¡¯s all about generalization and specialization
+16.1.2 Terms and notations
+-- single inheritance: creating a new class based on another class
+-- multiple inheritance: creating a new class based on multiple classes
+-- base class (parent class, super class)
+-- derived class (sub class, child class)
+-- is-A relationship: derived class is-A base class (e.g., a circle is a shape). Is-A is not bilateral
+-- two ways of building inheritance:
+-- generalization: wrap the common attributes of a bunch of classes
+-- specialization: derive special cases of an existing class
+-- hierachy
+  one arrow is an Is-A relationship
+16.1.3 inheritance and compostion 
+-- inheritance: is-A relationships
+Employee is-a person
+-- composition: has-A relationships
+Person has-a account. e.g., 
+ 
+Person has an account: Account is a part of Person class
+This means student and staff all have accouts since students and staff are Person.
+16.2 Syntax for inheritance in C++
+16.2.1 access specifier
+-- public 
+most common. establishes is-a relationship between derived and base classes.
+¡°Derived class is-A base class¡± 
+-- private and protected
+establish has-a relationship
+¡°Derived class has-A base class¡±
+16.2.2 syntax for base class
+Base class is simply a normal class without any inheritance.
+--.h
+class Account
+{
+private:
+	float balance;
+public:
+	void deposit(double amount);
+	void withdraw(double amount);
+	Account();
+	~Account();
+};
+--.cpp
+#include "Account.h"
+#include <iostream>
+
+Account::Account()
+	: balance{0} {
+}
+Account::~Account()
+{
+}
+void Account::deposit(double amount)
+{
+	std::cout << "Account depoist called with " << amount << std::endl;
+}
+void Account::withdraw(double amount)
+{
+	std::cout << "Account withdraw called with " << amount << std::endl;
+}
+16.2.3 syntax for derived class
+--.h  need to include BaseClass.h 
+#include "Account.h"
+class SavingAccount: public Account
+{
+public:
+	SavingAccount();
+	~SavingAccount();
+};
+16.3 Public, Private, Protected members and Inheritance
+16.3.1 what are protected members
+just like private and public data members, there is another type of members: protected members in Base:
+Accessible within the Base class or classes derived from the base class.
+Not Accessible from any object of base or derived
+
+16.3.2 other members with Public inheritance
+public members of the Base class will be accessible by derived classes and also their objects.
+private members of the Base class won¡¯t be accessible by Derived classes, surely neither their objects
+
+16.3.3 private members would still be inherited by derived classes. they are just not accessible. 
+
+16.4 Constructor, Destructor and Inheritance
+16.4.1 How constructor works with inheritance
+All accessible member attributes and methods can be used by the derived classes directly except:
+Base class constructor, destructor
+overloaded assignment operators
+friends. 
+However we can invoke them within derived classes.
+When a Derived object is created, Base class constructor executes then Derived class constructor executes
+16.4.2 How destructor works with inheritance
+when a derived object is destructed, derived class destructor is called before the base class destructor (opposite order of constructor)
+16.4.3 invoke base constructor from derived constructor
+SavingAccount::SavingAccount(double amount, double rate) // input all needed parameters to derived constructor
+	: Account(amount), interest_rate{rate} { // invoke chosen base constructor, followed by other initiallizations
+	std::cout << "Overloaded Derived Constructor is called!" << std::endl;
+}  // the base constructor is always called first before executing the derive constructor
+16.4.4 derived destructor does not need to call base destructor. Base destructor will always be called after the derived destructor by the compiler
+16.5 Copy and move constructors with inheritance
+16.6 Overloaded assignment operators with inheritance
