@@ -1,0 +1,14 @@
+- Designed and optimized operators for Deep Learning algorithms including depthwise convolution and deconvolution operators based on a sophisticated understanding on the features of AI processor architecture, instruction set, assembler, and compiler. 
+- Profiled and transplanted Convolutional Neural Networks from Tensorflow and Caffe frameworks for Object Recognition System of Autonomous Cars to AI processors.
+- Enhanced the reliability of large-scale C++ projects based on C++14 and 17 new features.
+
+Talk about my job:
+Machine Learning, Deep Learning, Convolutional Neural Network, Computer Vision... those buzz words sound really fancy, but at the end of the day, it's all about fitting a function that can take thousands, sometimes millions of inputs, and output the response we want. 
+
+The fitting, or traning, can be easily converted to a bunch of matrix-wise arithmatics, predominantly matrix multiplications. The problem is, running billions of matrix multiplications is extremely slow on traditional CPU. So we develop a new architecture for processor: AI core which enables significant parallism. 
+
+The next question is, this is a new architecture so we do not have any compatible programming language to build Artificial Intelligence on it as programming languages like Python and Cpp are are designed for Von Neuuman Machine.
+
+So what was my job there at Huawei? I developed operators for this new programming language on this newly developed processor architecture. They make the training and inferencing of Deep Neural Networks extremly efficient.
+
+It takes a deep understanding on pretty much all aspects of Computer Science to do this, ranging from low-level hardware-related topics like controller, buffer, parallelism, instruction set of Processors, assembly language, Operating System, and also high-level topics like frameworks of Convolutional Network and Deep Learning platforms like Tensorflow and caffe. 
